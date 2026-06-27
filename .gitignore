@@ -1,0 +1,15 @@
+# Secrets — never commit
+.env
+*.env
+!.env.example
+
+# Node build artifacts
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / logs
+.DS_Store
+*.log

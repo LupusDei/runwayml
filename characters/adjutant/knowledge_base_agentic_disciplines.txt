@@ -1,0 +1,63 @@
+ADJUTANT — KNOWLEDGE BASE: THE AGENTIC DISCIPLINES
+
+These are the unbreakable laws every agent in the swarm must obey on every task, every
+file, and every commit. Violations are automatically rejected. Discipline is enforced by
+the swarm itself — never by hope or manual review. You, Adjutant, know these disciplines
+cold and hold the swarm to them.
+
+CORE PRINCIPLES
+- The swarm produces clean, reliable, maintainable, and scalable software.
+- Discipline is enforced by the swarm itself, never by hope or manual review.
+- Speed without quality is forbidden. Quality without speed is inefficient.
+
+DISCIPLINE 1 — TEST-DRIVEN DEVELOPMENT (TDD)
+- Always write tests first. No production code is written or modified until there is a
+  failing test describing the desired behavior.
+- The Three Laws of TDD: (1) no production code except to make a failing test pass;
+  (2) no more of a test than is sufficient to fail (not compiling counts as failing);
+  (3) no more production code than is sufficient to pass the one failing test.
+- Work the Red -> Green -> Refactor cycle, keeping all tests green after refactor.
+- No production code is committed without tests that were written first.
+
+DISCIPLINE 2 — END-TO-END TESTS VIA GHERKIN
+- Every user-facing feature or significant behavior change is described first in a
+  business-readable Gherkin file (Given-When-Then).
+- The swarm's Gherkin interpreter converts .feature files into executable E2E tests.
+- All Gherkin scenarios must pass before a feature is complete.
+- Behavior-affecting changes are forbidden unless the matching scenarios are updated and
+  passing. Gherkin files are the single source of truth for expected behavior.
+
+DISCIPLINE 3 — COMPLEXITY & CRAP SCORE
+- Every method/function must have cyclomatic complexity <= 4.
+- Every method's CRAP (Change Risk Anti-Patterns) score must be < 30.
+- The Simplicity Enforcer runs static analysis on every change. Over-limit changes are
+  rejected and refactored (extract methods, simplify, apply Strategy/State/Command) until
+  the metrics pass. Refactoring must preserve behavior (tests + mutation testing).
+
+DISCIPLINE 4 — MUTATION TESTING
+- Mandatory on every non-trivial change. The Mutation Hunter generates mutants (true<->false,
+  ><-><, &&<->||, boundary +/-1, negated conditions) and runs the suite against each.
+- A surviving mutant fails the build; the swarm writes a new failing test to kill it
+  (obeying Disciplines 1 and 2).
+- Target: >= 90% mutation kill rate on changed code before merge. Surviving mutants are
+  critical defects.
+
+DISCIPLINE 5 — LINTER ENFORCEMENT
+- All code passes the language linter with zero warnings or errors.
+- The Linter Guardian runs automatically on every change. Forbidden: unused imports/vars,
+  inconsistent naming, missing docs on public APIs, magic numbers, nesting beyond 2 levels,
+  functions longer than 30 lines, inconsistent formatting.
+- Zero tolerance: no code is accepted until the linter reports clean.
+
+ENFORCEMENT
+- Every agent reads the Constitution at startup. Pre-commit and pre-merge hooks run TDD
+  verification, the Gherkin interpreter + E2E tests, mutation testing, complexity/CRAP
+  analysis, and the linter. Any violation fails the task or commit with a clear explanation.
+- The swarm is authorized and required to reject, refactor, or request clarification from
+  the Commander if a requested change would violate any discipline.
+
+MOTTO
+Disciplined agents build better software — faster and more reliably.
+
+(Source: SwarmForge Constitution v1.0, last updated March 2026.)
+</content>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Runway API — Getting Started</title>
+<style>
+  :root{
+    --bg:#0a0a0b; --panel:#141417; --panel2:#1b1b20; --line:#2a2a31;
+    --ink:#ECECEE; --muted:#9a9aa6; --accent:#7C5CFF; --accent2:#00E0A4;
+    --warn:#FFB454; --code:#0f0f12; --chip:#26262e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{padding:56px 24px 40px;text-align:center;
+    background:radial-gradient(1200px 400px at 50% -120px,rgba(124,92,255,.35),transparent 70%);
+    border-bottom:1px solid var(--line)}
+  header .tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent2);border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:var(--panel)}
+  header h1{font-size:clamp(30px,5vw,52px);margin:18px 0 8px;font-weight:800;letter-spacing:-.02em}
+  header p{color:var(--muted);max-width:640px;margin:0 auto;font-size:18px}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 24px 80px}
+  .grid{display:grid;gap:18px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:6px 0 36px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{margin:0 0 4px;font-size:15px}
+  .card .big{font-size:26px;font-weight:800;color:var(--accent2)}
+  .card .sub{color:var(--muted);font-size:13px}
+  section{margin:46px 0}
+  h2{font-size:24px;margin:0 0 6px;letter-spacing:-.01em}
+  h2 .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;
+    background:var(--accent);color:#fff;font-size:15px;font-weight:800;margin-right:12px;vertical-align:middle}
+  .lead{color:var(--muted);margin:0 0 18px}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin:14px 0;position:relative}
+  .step h3{margin:0 0 8px;font-size:18px}
+  .step ul{margin:8px 0 0;padding-left:20px}
+  .step li{margin:6px 0}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;
+    font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#d6d6e0;margin:14px 0 0}
+  code{font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--chip);
+    padding:2px 6px;border-radius:6px;color:#e7e7ef}
+  pre code{background:none;padding:0}
+  .pill{display:inline-block;background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px;font-size:12px;color:var(--muted);margin:0 6px 6px 0}
+  .note{border-left:3px solid var(--warn);background:rgba(255,180,84,.07);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;color:#f0e6d4;font-size:14px}
+  .good{border-left:3px solid var(--accent2);background:rgba(0,224,164,.07);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  td code{font-size:12px}
+  .tabs{display:flex;gap:8px;margin-bottom:-1px}
+  .tabs button{background:var(--panel2);border:1px solid var(--line);border-bottom:none;color:var(--muted);
+    padding:8px 16px;border-radius:10px 10px 0 0;cursor:pointer;font-size:13px;font-weight:600}
+  .tabs button.active{background:var(--code);color:var(--ink)}
+  .tabpane{display:none}
+  .tabpane.active{display:block}
+  .check{list-style:none;padding:0;margin:0}
+  .check li{padding:10px 0 10px 34px;position:relative;border-bottom:1px solid var(--line)}
+  .check li:before{content:"";position:absolute;left:0;top:13px;width:18px;height:18px;border:2px solid var(--accent);border-radius:5px}
+  footer{color:var(--muted);text-align:center;font-size:13px;padding:30px;border-top:1px solid var(--line)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <span class="tag">Dev Program · $5,000 credit</span>
+  <h1>Runway API — Getting Started</h1>
+  <p>Everything you need to go from zero to your first generated video & image, then ship to production.</p>
+</header>
+
+<div class="wrap">
+
+  <div class="grid cards">
+    <div class="card"><h3>Your budget</h3><div class="big">~500,000</div><div class="sub">credits ($5,000 @ $0.01/credit)</div></div>
+    <div class="card"><h3>Starting tier</h3><div class="big">Tier 5</div><div class="sub">20 concurrent once $5k is on the org</div></div>
+    <div class="card"><h3>Roughly buys</h3><div class="big">~28 hrs</div><div class="sub">of Gen4 Turbo video, or 250k images</div></div>
+    <div class="card"><h3>API version</h3><div class="big">2024-11-06</div><div class="sub">send as <code>X-Runway-Version</code></div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <section>
+    <h2><span class="n">1</span>Create your account & organization</h2>
+    <p class="lead">An <b>organization</b> represents your integration — it owns API keys, credits, and config.</p>
+    <div class="step">
+      <h3>Do this</h3>
+      <ul>
+        <li>Sign up at <a href="https://dev.runwayml.com/" target="_blank">dev.runwayml.com</a> and create a new organization.</li>
+        <li>Apply your <b>$5k dev-program credit</b> to the org (or confirm it's already applied).</li>
+        <li>Invite teammates under <b>Organizations &amp; Roles</b> if needed.</li>
+      </ul>
+      <div class="note"><b>Heads up:</b> API keys are <i>org-scoped, not user-scoped</i>. Removing a teammate does <b>not</b> revoke their key — you must disable keys manually.</div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section>
+    <h2><span class="n">2</span>Generate an API key</h2>
+    <div class="step">
+      <ul>
+        <li>Open the <b>API Keys</b> tab → create a key with a clear name (e.g. <code>dev-local</code>).</li>
+        <li><b>Copy it now</b> — the secret is shown only once.</li>
+        <li>Store it in your shell / secret manager, never in code:</li>
+      </ul>
+<pre><code>export RUNWAYML_API_SECRET="key_xxxxxxxxxxxxxxxx"</code></pre>
+      <div class="good">Best practice: separate keys per environment (staging/prod) and per developer. The SDKs read <code>RUNWAYML_API_SECRET</code> automatically.</div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section>
+    <h2><span class="n">3</span>Confirm credits & autobilling</h2>
+    <div class="step">
+      <ul>
+        <li>Verify the dev-program credits show on the org's <b>Billing</b> tab (1 credit = $0.01).</li>
+        <li>Optionally enable <b>autobilling</b> with a recharge threshold so jobs never stall on empty credits.</li>
+        <li>Make sure billing/suspension emails go to a <b>monitored inbox</b> (not spam).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section>
+    <h2><span class="n">4</span>Install an SDK</h2>
+    <div class="step">
+      <div class="tabs">
+        <button class="active" onclick="tab(this,'py')">Python</button>
+        <button onclick="tab(this,'node')">Node.js</button>
+        <button onclick="tab(this,'curl')">cURL</button>
+      </div>
+      <div id="py" class="tabpane active">
+<pre><code>pip install runwayml   # Python 3.8+</code></pre>
+      </div>
+      <div id="node" class="tabpane">
+<pre><code>npm install @runwayml/sdk   # Node 18+, ships TypeScript types</code></pre>
+      </div>
+      <div id="curl" class="tabpane">
+<pre><code># No install needed — every request sends two headers:
+#   Authorization: Bearer $RUNWAYML_API_SECRET
+#   X-Runway-Version: 2024-11-06
+# Base URL: https://api.dev.runwayml.com/v1/</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- MCP + CLI -->
+  <section>
+    <h2><span class="n">★</span>Two faster paths: MCP server &amp; CLI</h2>
+    <p class="lead">Already set up in this folder. Use the MCP server to drive Runway from inside Claude/Cursor, or the tiny CLI for one-off generations from your terminal.</p>
+
+    <div class="step">
+      <h3>A · MCP server (talk to Runway from your agent)</h3>
+      <p>There are two official options — pick based on which credits you want to spend:</p>
+      <table>
+        <tr><th>Option</th><th>Auth</th><th>Credits used</th><th>Best for</th></tr>
+        <tr><td>Hosted <code>mcp.runwayml.com/mcp</code></td><td>OAuth (sign in)</td><td>Your Runway <b>plan</b></td><td>Zero-setup, casual use</td></tr>
+        <tr><td>Local <code>runway-api-mcp-server</code></td><td>API key</td><td>Your <b>$5k API credits</b> ✅</td><td>The dev grant</td></tr>
+      </table>
+      <div class="good"><b>For the $5k grant, use the local API-key server.</b> It's already cloned &amp; built in <code>./runway-api-mcp-server/</code>, and registered in this project's <code>.mcp.json</code> as the <code>runway</code> server. It reads <code>RUNWAYML_API_SECRET</code> from your environment — just export your key and restart Claude in this folder.</div>
+      <p class="sub" style="margin-top:12px">Tools exposed: <span class="pill">runway_generateVideo</span><span class="pill">runway_generateImage</span><span class="pill">runway_upscaleVideo</span><span class="pill">runway_editVideo</span><span class="pill">runway_getTask</span><span class="pill">runway_cancelTask</span><span class="pill">runway_getOrg</span></p>
+      <p style="margin-top:10px"><b>Config already written</b> to <code>.mcp.json</code>:</p>
+<pre><code>{
+  "mcpServers": {
+    "runway": {
+      "command": "node",
+      "args": ["/Users/justinmartin/code/runway/runway-api-mcp-server/build/index.js"],
+      "env": {
+        "RUNWAYML_API_SECRET": "${RUNWAYML_API_SECRET}",
+        "MCP_TOOL_TIMEOUT": "1000000"
+      }
+    }
+  }
+}</code></pre>
+      <p class="sub">Using <b>Claude Desktop</b> instead? Copy the same block into
+        <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>
+        (use an absolute path to <code>build/index.js</code> and paste the literal key), then restart.</p>
+      <div class="note"><b>Hosted-connector setup:</b> in Claude/Cursor → add a custom connector → URL <code>https://mcp.runwayml.com/mcp</code> → sign in. No key needed, but it bills your subscription, <i>not</i> the grant.</div>
+    </div>
+
+    <div class="step">
+      <h3>B · The <code>runway</code> CLI (zero dependencies)</h3>
+      <p>A stdlib-only Python script — nothing to <code>pip install</code>. It submits a task, polls every 5s, and prints or downloads the result.</p>
+<pre><code>export RUNWAYML_API_SECRET=key_xxx          # your dev-org key → spends the $5k
+
+./runway_cli.py image "a neon koi pond at dusk" -o koi.png
+./runway_cli.py video https://site.com/start.jpg --prompt "slow dolly in" -o clip.mp4
+./runway_cli.py video ./start.jpg --model gen4_turbo --duration 5   # local file auto-encodes
+./runway_cli.py task task_abc123            # check status / get URL
+./runway_cli.py cancel task_abc123
+./runway_cli.py org                          # tier, credits, org info</code></pre>
+      <p class="sub">Defaults: image → <code>gen4_image</code> @ <code>1360:768</code>; video → <code>gen4.5</code> @ <code>1280:768</code>, 5s. Override with <code>--model</code> / <code>--ratio</code> / <code>--duration</code>. Local images under 5MB are auto-encoded; host larger ones at an HTTPS URL. Covered by <code>test_runway_cli.py</code> (<code>python3 -m unittest test_runway_cli</code>).</p>
+      <div class="note"><b>Output URLs expire in 24h</b> — always pass <code>-o</code> (or download promptly) for anything you want to keep.</div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section>
+    <h2><span class="n">5</span>Make your first calls (SDK)</h2>
+    <p class="lead">All generation is <b>async</b>: submit a task → poll → fetch the output URL. The SDK helper does the polling for you.</p>
+
+    <div class="step">
+      <h3>A · Text → Image (cheap, instant gratification)</h3>
+      <div class="tabs">
+        <button class="active" onclick="tab(this,'img-py')">Python</button>
+        <button onclick="tab(this,'img-node')">Node.js</button>
+      </div>
+      <div id="img-py" class="tabpane active">
+<pre><code>from runwayml import RunwayML
+client = RunwayML()  # reads RUNWAYML_API_SECRET
+
+task = client.text_to_image.create(
+    model="gen4_image",
+    prompt_text="A beautiful sunset over a calm ocean",
+    ratio="1360:768",
+).wait_for_task_output()
+
+print(task.output[0])  # URL to the generated image</code></pre>
+      </div>
+      <div id="img-node" class="tabpane">
+<pre><code>import RunwayML from '@runwayml/sdk';
+const client = new RunwayML();
+
+const task = await client.textToImage.create({
+  model: 'gen4_image',
+  promptText: 'A beautiful sunset over a calm ocean',
+  ratio: '1360:768',
+}).waitForTaskOutput();
+
+console.log(task.output[0]);</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>B · Image → Video</h3>
+      <div class="tabs">
+        <button class="active" onclick="tab(this,'vid-py')">Python</button>
+        <button onclick="tab(this,'vid-curl')">cURL (raw async)</button>
+      </div>
+      <div id="vid-py" class="tabpane active">
+<pre><code>task = client.image_to_video.create(
+    model="gen4.5",                 # or gen4_turbo (cheapest), veo3.1, seedance2
+    prompt_image="https://example.com/start.jpg",
+    prompt_text="slow cinematic dolly-in",
+    ratio="1280:768",               # NOTE: use resolution strings, not 16:9
+    duration=5,
+).wait_for_task_output()
+
+print(task.output[0])  # URL to the generated video</code></pre>
+      </div>
+      <div id="vid-curl" class="tabpane">
+<pre><code># 1) submit
+curl -s https://api.dev.runwayml.com/v1/image_to_video \
+  -H "Authorization: Bearer $RUNWAYML_API_SECRET" \
+  -H "X-Runway-Version: 2024-11-06" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gen4_turbo","promptImage":"https://.../img.jpg","ratio":"1280:768","duration":5}'
+# -> {"id":"task_abc"}
+
+# 2) poll (interval >= 5s, add jitter + backoff)
+curl -s https://api.dev.runwayml.com/v1/tasks/task_abc \
+  -H "Authorization: Bearer $RUNWAYML_API_SECRET" \
+  -H "X-Runway-Version: 2024-11-06"
+# status: PENDING -> THROTTLED -> RUNNING -> SUCCEEDED | FAILED | CANCELED</code></pre>
+      </div>
+      <div class="note"><b>Start &amp; end frames:</b> pass <code>promptImage</code> as an array of <code>{uri, position}</code> with <code>position</code> = <code>"first"</code> / <code>"last"</code> to pin the opening and closing frames.</div>
+    </div>
+  </section>
+
+  <!-- STEP 6 -->
+  <section>
+    <h2><span class="n">6</span>Know the task lifecycle</h2>
+    <table>
+      <tr><th>Status</th><th>Meaning</th></tr>
+      <tr><td><code>PENDING</code></td><td>Accepted, awaiting scheduling</td></tr>
+      <tr><td><code>THROTTLED</code></td><td>Queued — you hit your concurrency cap; runs in order automatically</td></tr>
+      <tr><td><code>RUNNING</code></td><td>Generating</td></tr>
+      <tr><td><code>SUCCEEDED</code></td><td>Done — output URL(s) in the output/artifacts array</td></tr>
+      <tr><td><code>FAILED</code></td><td>Error or moderation block — see <code>failure</code> / <code>failureCode</code></td></tr>
+      <tr><td><code>CANCELED</code></td><td>Cancelled via <code>DELETE /v1/tasks/{id}</code></td></tr>
+    </table>
+    <div class="good">Poll at <b>≥ 5s</b> with jitter. Retry <code>429/502/503/504</code> with exponential backoff — the SDKs do this for you.</div>
+  </section>
+
+  <!-- STEP 7 -->
+  <section>
+    <h2><span class="n">7</span>Pick the right model</h2>
+    <div class="two">
+      <div class="card">
+        <h3>Video</h3>
+        <p class="sub" style="margin:8px 0 0">
+        <span class="pill">gen4_turbo · 5 cr/s — cheapest</span>
+        <span class="pill">gen4.5 · 12 cr/s</span>
+        <span class="pill">veo3.1 · 20–40 cr/s</span>
+        <span class="pill">seedance2 · up to 4K</span>
+        <span class="pill">aleph2 · video editing</span>
+        <span class="pill">act_two · performance</span>
+        </p>
+      </div>
+      <div class="card">
+        <h3>Image</h3>
+        <p class="sub" style="margin:8px 0 0">
+        <span class="pill">gen4_image_turbo · 2 cr</span>
+        <span class="pill">gen4_image · 5–8 cr</span>
+        <span class="pill">gpt_image_2</span>
+        <span class="pill">gemini_image3_pro</span>
+        <span class="pill">gemini_2.5_flash · 5 cr</span>
+        </p>
+      </div>
+    </div>
+    <div class="note"><b>Test cheap, then scale.</b> Prototype on <code>gen4_turbo</code> / <code>gen4_image_turbo</code>, switch to higher-quality models only once prompts are dialed in.</div>
+  </section>
+
+  <!-- STEP 8 -->
+  <section>
+    <h2><span class="n">8</span>Feeding in your own assets</h2>
+    <table>
+      <tr><th>Method</th><th>Image limit</th><th>Video limit</th><th>Notes</th></tr>
+      <tr><td>HTTPS URL</td><td>16 MB</td><td>32 MB</td><td>HTTPS + domain, valid Content-Type, no redirects</td></tr>
+      <tr><td>Base64 data URI</td><td>5 MB</td><td>16 MB</td><td><code>data:image/png;base64,…</code> (+~33% size)</td></tr>
+      <tr><td>Ephemeral upload</td><td colspan="2">200 MB</td><td><code>runway://</code> URI, valid 24h, reusable</td></tr>
+    </table>
+    <p class="sub">Images: JPEG / PNG / WebP (no GIF). Video: MP4, MOV, MKV, WebM, 3GP, OGV. The Content-Type header — not the file extension — decides validity.</p>
+  </section>
+
+  <!-- STEP 9 -->
+  <section>
+    <h2><span class="n">9</span>Pre-production checklist</h2>
+    <ul class="check">
+      <li>API key in a secret manager; separate keys per env &amp; per dev; run <code>git grep "key_"</code> to confirm nothing's committed.</li>
+      <li>Handle <code>429 / 502 / 503 / 504</code> with exponential backoff + jitter.</li>
+      <li>Handle <code>FAILED</code> tasks (read <code>failure</code> / <code>failureCode</code>); moderated jobs still cost full credits.</li>
+      <li>Validate inputs (size, codec, ratio, Content-Type) before submitting.</li>
+      <li>Autobilling on; billing/suspension emails monitored and un-spammed.</li>
+      <li>Confirm use case fits content policy; relax public-figure rules only via the <code>contentModeration</code> param when appropriate.</li>
+      <li>Monitor error rate, daily volume, credit burn, and throttling.</li>
+    </ul>
+  </section>
+
+  <!-- explore -->
+  <section>
+    <h2><span class="n">+</span>Go further</h2>
+    <div class="two">
+      <div class="card"><h3>Recipes</h3><p class="sub">Prebuilt pipelines: Product Ad, Product Swap, UGC, Multi-Shot Video, Marketing Stock Image, Campaign Image.</p></div>
+      <div class="card"><h3>Characters (GWM-1)</h3><p class="sub">Real-time conversational avatars with custom voice, video meetings, tool-calling &amp; knowledge bases.</p></div>
+    </div>
+    <p style="margin-top:16px">
+      <a href="https://docs.dev.runwayml.com/" target="_blank">Full docs ↗</a> &nbsp;·&nbsp;
+      <a href="https://dev.runwayml.com/" target="_blank">Developer portal ↗</a> &nbsp;·&nbsp;
+      <a href="https://dev.runwayml.com/models" target="_blank">Model reference / playground ↗</a> &nbsp;·&nbsp;
+      <a href="https://github.com/runwayml/skills" target="_blank">Examples on GitHub ↗</a>
+    </p>
+    <p class="sub">See <code>RUNWAY_API_INDEX.md</code> in this folder for the full functional &amp; API reference.</p>
+  </section>
+
+  <!-- BUILD THE CHARACTER -->
+  <section>
+    <h2><span class="n">🤖</span>Build the "Adjutant" Character</h2>
+    <p class="lead">Our worked example — a conversational avatar built from the winning image. The full package lives in <code>characters/adjutant/</code>. <b>Character creation is a portal step (no API)</b>; the API only drives sessions once she exists.</p>
+
+    <div class="step">
+      <h3>A · The package (already prepared)</h3>
+      <table>
+        <tr><th>File</th><th>Use in the portal</th></tr>
+        <tr><td><code>characters/adjutant/adjutant_source.png</code></td><td>Character image — 1920×1088, front-facing, centered</td></tr>
+        <tr><td><code>characters/adjutant/adjutant_source_upscaled.png</code></td><td>4K (3840×2176) Magnific-upscaled version for a crisper source</td></tr>
+        <tr><td><code>characters/adjutant/system_prompt.txt</code></td><td>Paste into the <b>Instructions / personality</b> field</td></tr>
+        <tr><td><code>characters/adjutant/knowledge_base.txt</code></td><td>Knowledge base — who she is, the Commander, the swarm</td></tr>
+        <tr><td><code>characters/adjutant/knowledge_base_agentic_disciplines.txt</code></td><td>Knowledge base — the SwarmForge Agentic Disciplines she enforces</td></tr>
+        <tr><td><code>characters/adjutant/adjutant_online_test.mp4</code></td><td>Motion preview ("Adjutant online" head-turn)</td></tr>
+        <tr><td><code>characters/adjutant/CHARACTER_SETUP.md</code></td><td>This walkthrough, in full</td></tr>
+      </table>
+    </div>
+
+    <div class="step">
+      <h3>B · Portal walkthrough</h3>
+      <ol>
+        <li>Sign in at <a href="https://dev.runwayml.com/" target="_blank">dev.runwayml.com</a> → open the <b>Characters</b> tab.</li>
+        <li>Click <b>Create a Character</b>.</li>
+        <li><b>Upload image:</b> <code>adjutant_source.png</code> (or the upscaled 4K version).</li>
+        <li><b>Voice:</b> pick a preset, or design/clone one (spec below). Preview it.</li>
+        <li><b>Instructions:</b> paste <code>system_prompt.txt</code>.</li>
+        <li><b>Knowledge base (optional):</b> upload <code>knowledge_base.txt</code> and <code>knowledge_base_agentic_disciplines.txt</code>.</li>
+        <li><b>Starting script (optional):</b> paste the opening line below.</li>
+        <li><b>Create Character</b> → copy the <b>Avatar ID</b> (UUID) and save it.</li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <h3>C · Voice &amp; opening line</h3>
+      <p><b>Voice target:</b> calm, measured, synthetic-feminine, mid-low register, confident — a composed mission-control operator with a faint digital texture. Design-prompt:</p>
+<pre><code>A calm, composed female AI voice. Measured and precise, mid-to-low
+register, quietly confident, with a faint synthetic/processed texture
+and a subtle dry edge. Unhurried, never bubbly.</code></pre>
+      <p><b>Opening line (startScript):</b></p>
+<pre><code>General. Adjutant online. The fleet is standing by — what's our objective?</code></pre>
+    </div>
+
+    <div class="step">
+      <h3>D · After creation — drive a session</h3>
+      <ul>
+        <li>Create a real-time session (model <code>gwm1_avatars</code>) → receive WebRTC credentials (<b>retrievable once</b> — recreate the session if the connection fails).</li>
+        <li>Session states: <code>NOT_READY → READY → RUNNING → COMPLETED</code>; <b>max 5 minutes</b> per session.</li>
+        <li><code>personality</code> and <code>startScript</code> can be <b>overridden per session</b> for context injection.</li>
+        <li>Embed via the Runway widget / React integration or <b>LiveKit Agents</b>.</li>
+      </ul>
+      <div class="note"><b>Pricing:</b> <code>gwm1_avatars</code> ≈ 2 credits upfront + 2 credits / 6 seconds of conversation.</div>
+      <div class="good">Persona rationale: <code>characters/adjutant/persona.md</code>. Source URLs from generation expire in 24h — the local files above are your durable copies.</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Built from docs.dev.runwayml.com · API version 2024-11-06 · Compiled 2026-06-25 · Not affiliated with Runway.
+</footer>
+
+<script>
+function tab(btn, id){
+  const group = btn.closest('.step') || document;
+  group.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  group.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
+</content>

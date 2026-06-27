@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "runway": {
+      "command": "node",
+      "args": [
+        "/Users/justinmartin/code/runway/runway-api-mcp-server/build/index.js"
+      ],
+      "env": {
+        "RUNWAYML_API_SECRET": "${RUNWAYML_API_SECRET}",
+        "MCP_TOOL_TIMEOUT": "1000000"
+      }
+    }
+  }
+}
