@@ -9,6 +9,14 @@
         "RUNWAYML_API_SECRET": "${RUNWAYML_API_SECRET}",
         "MCP_TOOL_TIMEOUT": "1000000"
       }
+    },
+    "adjutant": {
+      "type": "http",
+      "url": "http://localhost:4201/mcp",
+      "headers": {
+        "X-Agent-Id": "${ADJUTANT_AGENT_ID:-unknown}",
+        "X-Project-Root": "${ADJUTANT_PROJECT_ROOT:-}"
+      }
     }
   }
 }
