@@ -48,21 +48,27 @@ each folder is the walkthrough.
 ## The CLI
 ```bash
 ./runway_cli.py image "a neon koi pond at dusk" -o koi.png
-./runway_cli.py video ./start.jpg --model gen4_turbo --duration 5 -o clip.mp4
+./runway_cli.py video ./start.jpg --model gen4_turbo --ratio 1280:720 --duration 5 -o clip.mp4
+./runway_cli.py upscale ./in.png -o out.png      # Magnific 2x image upscale
 ./runway_cli.py task <id>      # status / output URL
 ./runway_cli.py cancel <id>
 ./runway_cli.py org            # tier / credit info
 ```
 - Submit → poll (≥5s) → print URL or download with `-o`.
-- Defaults: image `gen4_image` @ `1360:768`; video `gen4.5` @ `1280:768`, 5s.
 - Local images <5MB auto-encode to data URIs; host larger ones at an HTTPS URL.
-- **Tests:** `python3 -m unittest test_runway_cli` (currently 11/11 passing).
+- **`--ratio` is model-specific and the docs lie** — guess wrong and the API 400 lists the
+  valid set (e.g. gen4_turbo image→video: `1280:720 720:1280 1104:832 832:1104 960:960 1584:672`).
+  The CLI's built-in defaults (`1360:768` image / `1280:768` video) are NOT universally
+  valid — pass `--ratio` explicitly. (`1280:768` is rejected by gen4_turbo; use `1280:720`.)
+- **Tests:** `python3 -m unittest test_runway_cli` (12/12 passing).
 
 ## The MCP server
 - Registered in `.mcp.json` as `runway`; restart Claude in this folder to load it.
 - Uses the **local API-key server** so generations spend the **$5k grant**.
 - Tools: `runway_generateVideo`, `runway_generateImage`, `runway_upscaleVideo`,
   `runway_editVideo`, `runway_getTask`, `runway_cancelTask`, `runway_getOrg`.
+- **After a fresh `git clone`, run `npm install` in `runway-api-mcp-server/`** — its
+  `node_modules/` is gitignored (only `build/index.js` + `src/` are committed).
 - Hosted alternative `https://mcp.runwayml.com/mcp` exists but **bills your subscription**, not the grant.
 
 ---
@@ -73,13 +79,37 @@ each folder is the walkthrough.
 - **Async task model:** `POST /v1/<endpoint>` → `{id}`; poll `GET /v1/tasks/{id}`;
   cancel `DELETE /v1/tasks/{id}`. Statuses: `PENDING → THROTTLED → RUNNING → SUCCEEDED|FAILED|CANCELED`.
 - **No per-minute rate limit** — only a daily cap; over-concurrency just queues as `THROTTLED`.
-- **`ratio` uses resolution strings** (`1280:768`, `768:1280`), **not** `16:9`/`9:16` (removed in this API version).
+- **`ratio` uses resolution strings** (not `16:9`/`9:16`) and the valid set is **per-model** —
+  discover it from the API's 400 error, don't trust the docs (see Hard-won lessons).
 - **Start/end frames:** pass `promptImage` as `[{uri, position:"first"}, {uri, position:"last"}]`.
 - **API keys are org-scoped, not user-scoped** — removing a teammate doesn't revoke their key.
 - **Moderated/blocked generations still cost full credits**; repeated violations → suspension.
 - Cheapest models for prototyping: video `gen4_turbo` (5 cr/s), image `gen4_image_turbo` (2 cr).
 - **Name trap:** `mcp.runway.team` / `docs.runway.team` is a *different company* (mobile release
   management). The AI media tool is `runwayml.com` / `docs.dev.runwayml.com`.
+
+## Hard-won lessons (discovered while building this)
+- **Probe unknown request schemas**: POST an empty/partial body and read the 400 `issues[]`.
+  That's how we mapped `POST /v1/image_upscale` → `{model:"magnific_precision_upscaler_v2", imageUri}`
+  and the per-model `ratio` enums. Faster than hunting the docs.
+- **Transient `INTERNAL.BAD_OUTPUT.CODE01`** on video gen happens intermittently — just retry
+  (the CLI usage wraps a 3× retry loop). Failed/transient gens still cost credits.
+- **Moderation** can reject an image+prompt combo with `FAILED` + `SAFETY.INPUT.MULTIMODAL`
+  (hit it on a "sexy/submissive" prompt; still charged). Real, non-public-figure faces
+  animate fine — Todd's photo generated with no flag.
+- **Character consistency**: explore looks with cheap `gen4_image_turbo` + a reference image;
+  using an already-good variant *as the reference* locks fine details (e.g. glowing eyes)
+  far better than re-describing them. For a REAL person, do NOT generate variants — use the
+  actual photo to preserve likeness.
+- **macOS TCC**: this environment cannot read `~/Documents` (shell *and* file tools return
+  `Operation not permitted`); `~/Downloads` is fine. Have the user copy files into the repo.
+- **Shell**: the Bash tool runs zsh and its working dir persists across calls. Use
+  `/bin/bash -c` or a heredoc for bash arrays (`${arr[@]}` fails in zsh); a `cd` leaks into
+  later calls.
+- **Voice samples**: pod.co exposes RSS at `feed.pod.co/<handle>` with `<enclosure>` mp3s on
+  `downloads.pod.co`. `ffmpeg` (installed via brew) trims clean single-speaker clips for
+  cloning; the clone itself is a Runway-portal / ElevenLabs step. See
+  `characters/todd/exploration/voice/`.
 
 ## Conventions for working here
 - Validate inputs (size, codec, ratio, Content-Type) before submitting; handle `429/502/503/504`

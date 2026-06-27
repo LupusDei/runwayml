@@ -105,7 +105,9 @@ All generation is asynchronous:
 | Image/Text → video | `POST /v1/image_to_video` | `client.imageToVideo.create` | `client.image_to_video.create` |
 | Video → video | `POST /v1/video_to_video` | — | — |
 | Character performance | `POST /v1/character_performance` | `client.characterPerformance.create` | `client.character_performance.create` |
-| Upscale / audio | model-specific endpoints | — | — |
+| Image upscale | `POST /v1/image_upscale` | — | — |
+| Video upscale | `POST /v1/video_upscale` | — | — |
+| Audio (TTS etc.) | model-specific endpoints | — | — |
 | Get task | `GET /v1/tasks/{id}` | `client.tasks.retrieve` | `client.tasks.retrieve` |
 | Cancel/delete task | `DELETE /v1/tasks/{id}` | — | — |
 | Ephemeral upload | `POST /v1/uploads` | `client.uploads.createEphemeral` | `client.uploads.create_ephemeral` |
@@ -114,7 +116,7 @@ All generation is asynchronous:
 - `model` — e.g. `gen4.5`, `gen4_turbo`, `veo3.1`, `seedance2` (required)
 - `promptImage` — either a string URI **or** an array of `{ uri, position }` where `position` ∈ `"first"|"last"` (lets you set start AND end frames). Each position must be unique.
 - `promptText` — guidance text (optional)
-- `ratio` — direct resolution string, e.g. `1280:768`, `768:1280` (the old `16:9`/`9:16` are **no longer accepted**)
+- `ratio` — direct resolution string (the old `16:9`/`9:16` are **no longer accepted**). ⚠️ **The valid set is per-model** — don't trust a single example. gen4_turbo image→video accepts `1280:720 720:1280 1104:832 832:1104 960:960 1584:672`; other models differ. Send a wrong value and the 400 response lists the valid options.
 - `duration` — seconds (model-dependent)
 - `seed` — `0`–`4294967295`
 - `contentModeration` — object to relax public-figure strictness (see §8)
@@ -124,6 +126,13 @@ All generation is asynchronous:
 - `promptText` — required
 - `ratio` — e.g. `1360:768`, `1920:1080` (model-dependent)
 - reference images + `seed` optional
+
+### 4.3 Key parameters (`image_upscale`) — verified by schema probe
+- `model` — `magnific_precision_upscaler_v2` (required)
+- `imageUri` — URL, data URI, or `runway://` URI of the image (required)
+- Returns the standard task object; output is the upscaled image URL. ~25 cr (150 if >4096px).
+- Probe technique: `POST` with `{}` then `{ "model": "..." }` and read the 400 `issues[]` to
+  reveal required fields — how this schema was discovered.
 
 ---
 

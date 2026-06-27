@@ -10,6 +10,10 @@ node_modules/
 __pycache__/
 *.pyc
 
+# Generated/large media — regenerate via the CLI or re-pull per CHARACTER_SETUP.md
+*.mp4
+*.mp3
+
 # OS / logs
 .DS_Store
 *.log
