@@ -38,7 +38,7 @@ mission-control operator with a faint digital texture, not warm-and-fuzzy.
   Or clone from a 10–30s clean audio sample if you have a reference.
 
 ## Starting script (opening line)
-> "General. Adjutant online. The fleet is standing by — what's our objective?"
+> "Commander. Adjutant online. The fleet is standing by — what's our objective?"
 
 ## After creation — integration
 Once you paste the Avatar ID here, the session flow is:
