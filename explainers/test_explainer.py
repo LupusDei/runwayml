@@ -59,6 +59,13 @@ class ValidateTest(unittest.TestCase):
         ep["scenes"][-1]["line"] = "See you soon, Sam!"
         self.assertEqual(problems(ep, audience=other), [])
 
+    def test_should_not_count_a_name_hidden_inside_another_word_as_a_greeting(self):
+        al = {"name": "Al", "names": [{"spoken": "Al", "heard": ["al"]}]}
+        ep = copy.deepcopy(GOOD)
+        ep["scenes"][0]["line"] = "Also, we will build a robot!"
+        ep["scenes"][-1]["line"] = "See you soon, Al!"
+        self.assertTrue(any("first scene" in p for p in problems(ep, audience=al)))
+
     def test_should_reject_too_few_scenes_for_ninety_seconds(self):
         self.assertTrue(problems({"scenes": GOOD["scenes"][:2]}))
 
@@ -172,6 +179,13 @@ class QcTest(unittest.TestCase):
     def test_should_accept_every_heard_spelling_not_only_the_first(self):
         # Regression, 2026-09-26: three correct takes were rejected because one heard spelling was missing.
         self.assertEqual(ex.names_missing("See you soon, Myra. See you soon, Tio.", AUD), [])
+
+    def test_should_not_hear_a_short_name_inside_a_longer_word(self):
+        # A short name hides inside ordinary words ("Al" in "all", "also", "metal"): a substring match passes a
+        # take that never said the name.
+        al = {"name": "Al", "names": [{"spoken": "Al", "heard": ["al", "hal"]}]}
+        self.assertEqual(ex.names_missing("We all built a metal robot, also a car!", al), ["Al"])
+        self.assertEqual(ex.names_missing("And hello, Hal!", al), [])
 
     def test_should_name_the_missing_child(self):
         self.assertEqual(ex.names_missing("Myra, hop in!", AUD), ["Thee-oh"])

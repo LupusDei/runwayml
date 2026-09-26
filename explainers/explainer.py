@@ -141,6 +141,13 @@ def words(text: str) -> list[str]:
     return out
 
 
+def contains_phrase(text: str, phrase: str) -> bool:
+    """Whole-word match: does `phrase` appear in `text` as consecutive words? A substring test hears a short name
+    inside ordinary words ("Al" in "all" and "metal") and would pass a take that never said it."""
+    hay, needle = words(text), words(phrase)
+    return bool(needle) and any(hay[i:i + len(needle)] == needle for i in range(len(hay) - len(needle) + 1))
+
+
 def spoken_words(line: str) -> int:
     """How many words the character has to say — the budget that decides whether a scene fits its 15 s."""
     return len(words(line))
@@ -185,7 +192,7 @@ def validate(episode: dict, character: dict, audience: dict, guests: list[dict] 
     if scenes:
         spoken = [n["spoken"] for n in audience.get("names", [])]
         for where, sc in (("first", scenes[0]), ("last", scenes[-1])):
-            missing = [n for n in spoken if n not in sc.get("line", "")]
+            missing = [n for n in spoken if not contains_phrase(sc.get("line", ""), n)]
             if missing:
                 problems.append(f"{where} scene must greet every child by name; missing {', '.join(missing)} "
                                 f"(spell them exactly as in the audience file)")
@@ -222,8 +229,8 @@ def line_match(expected: str, heard: str) -> float:
 
 def names_missing(transcript: str, audience: dict) -> list[str]:
     """The audience names (as spelled in the script) that the transcript does not contain in any heard form."""
-    t = transcript.lower()
-    return [n["spoken"] for n in audience.get("names", []) if not any(h in t for h in n["heard"])]
+    return [n["spoken"] for n in audience.get("names", [])
+            if not any(contains_phrase(transcript, h) for h in n["heard"])]
 
 
 def scene_verdict(scene: dict, transcript: str, is_bookend: bool, audience: dict) -> tuple[bool, str]:
