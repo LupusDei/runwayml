@@ -74,6 +74,10 @@ The validator enforces the first four.
 - **Props that usually carry writing get writing.** A cinema popcorn bucket came out with "POP" on it. Say
   "a plain striped popcorn bucket with no writing". The same goes for books, signs, boxes and jerseys.
 - **Name every drifting trait in the character's `look`.**
+- **A prop that recurs across scenes drifts unless it has a reference image.** The robot in the robots episode
+  was a box, then a humanoid, then a camera-headed cart; words alone did not hold it. If the prop is the star
+  of the episode, make it a **guest** (PLAYBOOK §1): one `gen4_image` still, then every scene uses it. If it is
+  meant to change (a robot being built), make the change part of the story so the drift reads as progress.
 
 ## Sound rules
 
