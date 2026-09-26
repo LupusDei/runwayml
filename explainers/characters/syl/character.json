@@ -1,0 +1,17 @@
+{
+ "name": "Syl",
+ "pronoun": "She",
+ "look": "Syl, the glowing starlight woman from the reference image: silver-white hair, midnight-blue velvet high-collared gown, and her tiny white unicorn with small leathery bat-like wings. Soft glowing 3D animated-film style, deep blue starfield. ",
+ "reference_image": "reference.png",
+ "voice_reference": "voice.mp3",
+ "music": "playful-bed.mp3",
+ "model": "seedance2_5",
+ "ratio": "834:1112",
+ "notes": [
+  "reference.png is frame 0:06 of the Commander's favourite render, ~/.syl/renders/syl-20260923t140618534z-mid-face-visible.mp4.",
+  "voice.mp3 is 2.9-13.4 s of that same render, run through voice_isolation (explainer.py voice-ref). Her NATIVE Seedance voice; designed and preset TTS voices were all rejected by the Commander.",
+  "Syl's likeness is hers: do not redesign her. Use this reference; do not generate a new look.",
+  "The unicorn drifts to feathered wings unless 'leathery bat-like wings' is said every time — it is in the look for that reason.",
+  "seedance2 refused this character three times as a third-party likeness; seedance2_5 never has."
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "title": "Syl and the eight planets (example)",
+ "character": "syl",
+ "audience": "example",
+ "scenes": [
+  {
+   "id": "01-mercury",
+   "line": "Mee-ra! Thee-oh! Hop in — we're flying past all eight planets! First, Mercury: the smallest planet, and the closest to the Sun. Ooh, toasty!",
+   "action": "She waves, hops into a chubby little white rocket with red fins with the unicorn tucked under her arm, and zooms past a tiny grey cratered planet right beside a huge blazing Sun; the unicorn fans itself with a wing.",
+   "sfx": "rocket whoosh as they launch, deep crackling roar of the Sun"
+  },
+  {
+   "id": "02-venus-earth",
+   "line": "Next, Venus: the hottest planet of all, wrapped in thick yellow clouds. Phew! And there's Earth: our home, with blue oceans, green trees... and you!",
+   "action": "The little rocket flies through swirling hot yellow clouds and the unicorn's mane frizzes up; then they burst out beside a beautiful blue and green Earth, and she points down at it and waves.",
+   "sfx": "sizzling hiss of hot clouds, then a gentle whoosh"
+  },
+  {
+   "id": "03-mars-jupiter",
+   "line": "Mars is the red planet, covered in rusty red dust. Achoo! And Jupiter is the biggest of all, with a storm so huge it could swallow our whole Earth!",
+   "action": "They zoom low over a dusty red planet and a puff of red dust makes the unicorn sneeze; then a gigantic striped planet with a huge swirling red storm fills the whole sky, and her eyes go wide.",
+   "sfx": "dusty wind, a tiny unicorn sneeze, deep rumbling storm"
+  },
+  {
+   "id": "04-saturn",
+   "line": "Saturn has beautiful rings, made of ice and rock. And Saturn is so light, it could float in a giant bathtub! Look, she's surfing the rings!",
+   "action": "The rocket glides past a golden planet with glittering icy rings; the unicorn leaps out and surfs along the rings on a chunk of ice, and she laughs and claps.",
+   "sfx": "tinkling ice chimes, a playful swoosh as the unicorn surfs"
+  },
+  {
+   "id": "05-uranus-neptune",
+   "line": "Uranus spins on its side, so it rolls around the Sun like a ball! And Neptune, the farthest planet, is deep blue and super windy. Hold on tight!",
+   "action": "They pass a pale blue-green planet tipped on its side, rolling along; then a deep blue planet where a howling wind blows her hair and the unicorn's mane wildly as she clings on, laughing.",
+   "sfx": "soft rolling rumble, then howling whistling wind"
+  },
+  {
+   "id": "06-home",
+   "line": "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. Eight planets! Now, home for tea. See you soon, Mee-ra! See you soon, Thee-oh!",
+   "action": "The little rocket turns and flies back towards a glowing blue Earth; she waves goodbye to the viewer, and the sleepy unicorn yawns and curls up on her shoulder.",
+   "sfx": "gentle rocket whoosh, soft sparkling chime at the end"
+  }
+ ]
+}

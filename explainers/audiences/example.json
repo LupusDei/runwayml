@@ -1,0 +1,26 @@
+{
+ "name": "Mira and Theo",
+ "ages": "5 and 3",
+ "names": [
+  {
+   "spoken": "Mee-ra",
+   "heard": [
+    "mira",
+    "meera",
+    "myra"
+   ]
+  },
+  {
+   "spoken": "Thee-oh",
+   "heard": [
+    "theo",
+    "teo",
+    "tio"
+   ]
+  }
+ ],
+ "notes": [
+  "FICTIONAL example audience. Copy it to audiences/<real-names>.json for a real audience, which stays local and gitignored.",
+  "'spoken' is the phonetic spelling that makes the model say the name right; 'heard' is every way whisper writes a correct pronunciation. Add to 'heard' from out/<ep>/qc.json; never loosen the threshold."
+ ]
+}

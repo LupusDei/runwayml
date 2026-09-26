@@ -17,3 +17,17 @@ __pycache__/
 # OS / logs
 .DS_Store
 *.log
+
+# explainers: media, models and generated output stay local (PLAYBOOK.md says how to rebuild each)
+explainers/models/
+explainers/out/
+explainers/characters/*/*.png
+explainers/characters/*/*.mp3
+# THIS REPO IS PUBLIC. Real children's names, ages and likenesses stay local: only the fictional
+# examples and the syl character are committed.
+explainers/audiences/*
+!explainers/audiences/example.json
+explainers/episodes/*
+!explainers/episodes/example.json
+explainers/characters/*
+!explainers/characters/syl/
