@@ -63,11 +63,14 @@ episode as `"guests": ["<name>"]`.
 
 ## 2. Write the episode
 
-Copy `episodes/example.json`. Use one scene per 15-second beat, six scenes in all. Each scene has:
+Copy `episodes/example.json`. Use one scene per 15-second beat: **6 scenes for 90 s, 12 for three minutes**
+(4–16 allowed). FORMULA.md has the shape for each. Each scene has:
 - `id`: the takes are filed under it.
 - `line`: exactly what the character says. Keep it to 34 words or fewer, with no digits.
 - `action`: what we see, including the companion gag.
 - `sfx`: the sounds the action makes.
+- `fact_check`: how each claim was checked, with the arithmetic ("1 AU = 499 s at c → 8.3 min"), or
+  "no factual claims". It is required.
 
 Check the facts. Everything the character says must be true. Kid-famous myths (Washington's wooden teeth,
 JQA's alligator) are the trap: when a story is disputed, pick a different fact.
@@ -123,7 +126,8 @@ Send `report.json` → `share`, which is under 30 MB and re-encoded only if need
 
 | Item | Figure |
 |---|---|
-| `seedance2_5` | 30 cr/s, so a 15 s scene is 450 credits. A re-roll costs the same. |
+| `seedance2_5` | 30 cr/s, so a 15 s scene is 450 credits. A re-roll costs the same. `check` prints the estimate. |
+| Three-minute episode | About 5,400 credits. The master is too big to send, so `verify` makes the smallest share copy that fits under 30 MB. |
 | Render time | 4–7 min per scene. Scenes run in parallel (org tier: 20 concurrent). |
 | Runway output URLs | Expire after 24 h. `make` downloads immediately. |
 | `promptText` | 1000 characters maximum. `check` computes every prompt. |

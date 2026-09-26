@@ -15,11 +15,11 @@ AUD = {"name": "Mira and Theo", "names": [
     {"spoken": "Mee-ra", "heard": ["mira", "meera", "myra"]},
     {"spoken": "Thee-oh", "heard": ["theo", "teo", "tio"]}]}
 GOOD = {"character": "syl", "audience": "mira-and-theo", "scenes": [
-    {"id": "01", "line": "Mee-ra! Thee-oh! Hop in, we are flying past all eight planets!", "action": "She waves.", "sfx": "rocket whoosh"},
-    {"id": "02", "line": "Venus is the hottest planet of all.", "action": "They fly past Venus.", "sfx": "sizzle"},
-    {"id": "03", "line": "Earth is our home.", "action": "They wave at Earth.", "sfx": "birdsong"},
-    {"id": "04", "line": "Mars is red and dusty.", "action": "Red dust puffs.", "sfx": "wind"},
-    {"id": "05", "line": "See you soon, Mee-ra! See you soon, Thee-oh!", "action": "She waves goodbye.", "sfx": "twinkle"},
+    {"id": "01", "line": "Mee-ra! Thee-oh! Hop in, we are flying past all eight planets!", "action": "She waves.", "sfx": "rocket whoosh", "fact_check": "eight planets: IAU 2006"},
+    {"id": "02", "line": "Venus is the hottest planet of all.", "action": "They fly past Venus.", "sfx": "sizzle", "fact_check": "NASA planet fact sheets"},
+    {"id": "03", "line": "Earth is our home.", "action": "They wave at Earth.", "sfx": "birdsong", "fact_check": "NASA planet fact sheets"},
+    {"id": "04", "line": "Mars is red and dusty.", "action": "Red dust puffs.", "sfx": "wind", "fact_check": "NASA planet fact sheets"},
+    {"id": "05", "line": "See you soon, Mee-ra! See you soon, Thee-oh!", "action": "She waves goodbye.", "sfx": "twinkle", "fact_check": "NASA planet fact sheets"},
 ]}
 
 
@@ -66,6 +66,23 @@ class ValidateTest(unittest.TestCase):
         bad = copy.deepcopy(GOOD)
         del bad["scenes"][1]["sfx"]
         self.assertTrue(any("missing 'sfx'" in p for p in problems(bad)))
+
+    def test_should_accept_a_three_minute_episode_of_twelve_scenes(self):
+        long = copy.deepcopy(GOOD)
+        middle = [dict(GOOD["scenes"][1], id=f"m{i}") for i in range(10)]
+        long["scenes"] = [GOOD["scenes"][0], *middle, GOOD["scenes"][-1]]
+        self.assertEqual(problems(long), [])
+
+    def test_should_reject_more_scenes_than_a_small_child_will_sit_through(self):
+        long = copy.deepcopy(GOOD)
+        middle = [dict(GOOD["scenes"][1], id=f"m{i}") for i in range(ex.MAX_SCENES)]
+        long["scenes"] = [GOOD["scenes"][0], *middle, GOOD["scenes"][-1]]
+        self.assertTrue(any("scenes" in p for p in problems(long)))
+
+    def test_should_require_every_scene_to_say_how_its_facts_were_checked(self):
+        bad = copy.deepcopy(GOOD)
+        del bad["scenes"][2]["fact_check"]
+        self.assertTrue(any("fact_check" in p for p in problems(bad)))
 
     def test_should_reject_duplicate_scene_ids_because_takes_are_filed_by_id(self):
         bad = copy.deepcopy(GOOD)
@@ -174,7 +191,22 @@ class QcTest(unittest.TestCase):
         self.assertIn("wrong words", why)
 
 
+class CostTest(unittest.TestCase):
+    def test_should_price_an_episode_by_seconds_rendered_at_the_model_rate(self):
+        self.assertEqual(ex.estimate_credits(GOOD, CHAR), 5 * 15 * 30)
+
+    def test_should_price_a_model_the_kit_does_not_know_at_the_highest_rate(self):
+        # an unknown rate must over-estimate, never under-estimate: the number is used to decide whether to spend
+        self.assertEqual(ex.estimate_credits(GOOD, dict(CHAR, model="future_model")), 5 * 15 * max(ex.CREDITS_PER_SECOND.values()))
+
+
 class FinalProblemsTest(unittest.TestCase):
+    def test_should_expect_three_minutes_from_twelve_scenes(self):
+        long = dict(GOOD, scenes=[GOOD["scenes"][0], *[dict(GOOD["scenes"][1], id=f"m{i}") for i in range(10)], GOOD["scenes"][-1]])
+        script = " ".join(s["line"] for s in long["scenes"]).replace("Mee-ra", "Myra").replace("Thee-oh", "Theo")
+        self.assertEqual(ex.final_problems(long, script, seconds=181.0, lufs=-16.0, audience=AUD), [])
+        self.assertTrue(ex.final_problems(long, script, seconds=90.0, lufs=-16.0, audience=AUD))
+
     def test_should_pass_a_finished_episode_that_says_its_script(self):
         self.assertEqual(ex.final_problems(GOOD, heard_script(), seconds=75.0, lufs=-16.1, audience=AUD), [])
 

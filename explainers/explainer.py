@@ -48,6 +48,10 @@ WHISPER_MODEL = os.path.join(HERE, "models", "ggml-base.en.bin")
 PROMPT_LIMIT = 1000        # Runway rejects promptText over 1000 characters
 MAX_WORDS_PER_SCENE = 34   # ~15 s of unhurried speech; more and the model gabbles to fit the clip
 SCENE_SECONDS = 15         # a good beat length for small children
+MIN_SCENES, MAX_SCENES = 4, 16   # 1-4 minutes. Past four, a three-year-old has left the room
+MAX_PARALLEL = 16          # Runway's tier allows 20 concurrent tasks; leave headroom for anything else running
+# Credits per second of video. estimate_credits() prices an unknown model at the HIGHEST rate on purpose.
+CREDITS_PER_SECOND = {"seedance2_5": 30, "seedance2": 40}
 # seedance2_5 unless a character says otherwise. Measured 2026-09-26 with Syl: seedance2 was refused
 # (SAFETY.OUTPUT.THIRD_PARTY) three times; seedance2_5 never was, made the voice the Commander likes, and costs
 # 30 cr/s not 40. A refusal is decided by the LIKENESS, so it is a property of the character, not of the kit.
@@ -156,15 +160,15 @@ def validate(episode: dict, character: dict, audience: dict, guests: list[dict] 
     """Every rule a script can break before anything is spent. Empty list = ready to render."""
     problems = []
     scenes = episode.get("scenes") or []
-    if not 4 <= len(scenes) <= 8:
-        problems.append(f"{len(scenes)} scenes; the formula uses 6 (5-7) for about 90 seconds")
+    if not MIN_SCENES <= len(scenes) <= MAX_SCENES:
+        problems.append(f"{len(scenes)} scenes; use {MIN_SCENES}-{MAX_SCENES} (6 for 90 seconds, 12 for three minutes)")
     seen = set()
     for i, sc in enumerate(scenes):
         sid = sc.get("id", f"#{i + 1}")
         if sid in seen:
             problems.append(f"{sid}: duplicate scene id — takes are filed by id and would overwrite each other")
         seen.add(sid)
-        for key in ("id", "line", "action", "sfx"):
+        for key in ("id", "line", "action", "sfx", "fact_check"):
             if not str(sc.get(key, "")).strip():
                 problems.append(f"{sid}: missing '{key}'")
         if sc.get("line"):
@@ -200,6 +204,12 @@ def scene_body(scene: dict, character: dict, guests: list[dict], data_uri) -> di
             "promptText": build_prompt(scene, character, guests), "ratio": character["ratio"],
             "duration": SCENE_SECONDS, "audio": True,
             "referenceAudio": [{"type": "audio", "uri": data_uri(character["voice_reference"])}]}
+
+
+def estimate_credits(episode: dict, character: dict) -> int:
+    """First-take cost. Re-rolls cost the same again per scene."""
+    rate = CREDITS_PER_SECOND.get(character.get("model"), max(CREDITS_PER_SECOND.values()))
+    return len(episode.get("scenes") or []) * SCENE_SECONDS * rate
 
 
 def line_match(expected: str, heard: str) -> float:
@@ -333,13 +343,17 @@ def contact_sheet(video: str, dest: str, seconds: float) -> None:
 
 
 def share_copy(video: str) -> str:
-    """The file to send. Re-encoded smaller only if the master is over the SendUserFile limit."""
+    """The file to send: the master if it fits the SendUserFile limit, else the lightest re-encode that does.
+    A three-minute episode does not fit at CRF 23, so this steps the quality down only as far as it must."""
     if os.path.getsize(video) <= SHARE_LIMIT_BYTES:
         return video
     small = video.replace(".mp4", "-share.mp4")
-    _run([FF, "-hide_banner", "-loglevel", "error", "-y", "-i", video, "-c:v", "libx264", "-crf", "27",
-          "-preset", "medium", "-c:a", "copy", "-movflags", "+faststart", small])
-    return small
+    for crf in (26, 28, 30, 32):
+        _run([FF, "-hide_banner", "-loglevel", "error", "-y", "-i", video, "-c:v", "libx264", "-crf", str(crf),
+              "-preset", "medium", "-c:a", "copy", "-movflags", "+faststart", small])
+        if os.path.getsize(small) <= SHARE_LIMIT_BYTES:
+            return small
+    raise RuntimeError(f"{small} is still over {SHARE_LIMIT_BYTES} bytes at CRF 32; send it another way")
 
 
 def paths_for(episode_path: str) -> tuple[str, str, str]:
@@ -386,7 +400,7 @@ def make(episode_path: str) -> int:
     scenes = episode["scenes"]
     log(f"{episode.get('title', name)}: {len(scenes)} scenes, {character['name']} for {audience['name']}, "
         f"{character['model']}, rendering in parallel")
-    with cf.ThreadPoolExecutor(len(scenes)) as pool:
+    with cf.ThreadPoolExecutor(min(len(scenes), MAX_PARALLEL)) as pool:
         futs = [pool.submit(render_scene, rw, sc, character, guests, audience, work, i in (0, len(scenes) - 1), log)
                 for i, sc in enumerate(scenes)]
         results = [f.result() for f in futs]
@@ -444,8 +458,8 @@ if __name__ == "__main__":
         ep = read_json(args[1])
         ch, aud = load_cast(ep)
         p = validate(ep, ch, aud, load_guests(ep))
-        print(f"OK — ready to render ({len(ep['scenes'])} scenes, {ch['name']} for {aud['name']}, "
-              f"~{len(ep['scenes']) * SCENE_SECONDS * 30:,} credits)" if not p else "PROBLEMS:\n  " + "\n  ".join(p))
+        print(f"OK — ready to render ({len(ep['scenes'])} scenes = {len(ep['scenes']) * SCENE_SECONDS} s, {ch['name']} "
+              f"for {aud['name']}, ~{estimate_credits(ep, ch):,} credits first-take)" if not p else "PROBLEMS:\n  " + "\n  ".join(p))
         sys.exit(0 if not p else 2)
     if len(args) == 5 and args[0] == "voice-ref":
         sys.exit(voice_ref(args[1], float(args[2]), float(args[3]), args[4]))
