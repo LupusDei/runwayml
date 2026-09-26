@@ -71,6 +71,8 @@ The validator enforces the first four.
   gentleman in a long blue coat"), not as portraits. The facts are the point, and the model would otherwise
   invent a face and present it as the real person.
 - **Plain, unmarked vehicles.** No flags, badges or plates, because those are text again.
+- **Props that usually carry writing get writing.** A cinema popcorn bucket came out with "POP" on it. Say
+  "a plain striped popcorn bucket with no writing". The same goes for books, signs, boxes and jerseys.
 - **Name every drifting trait in the character's `look`.**
 
 ## Sound rules

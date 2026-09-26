@@ -336,10 +336,18 @@ def assemble(clips: list[str], music: str, out: str) -> None:
           "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", out])
 
 
-def contact_sheet(video: str, dest: str, seconds: float) -> None:
-    """Twelve frames across the episode in one image: the look that catches lettering, extra limbs and drift."""
+def sheet_grid(n_scenes: int) -> tuple[int, int]:
+    """(columns, rows) for a contact sheet with two frames per scene: four across up to 90 s, six across beyond."""
+    frames = 2 * n_scenes
+    cols = 4 if frames <= 12 else 6
+    return cols, -(-frames // cols)
+
+
+def contact_sheet(video: str, dest: str, seconds: float, n_scenes: int) -> None:
+    """Two frames per scene in one image: the look that catches lettering, extra limbs and drift."""
+    cols, rows = sheet_grid(n_scenes)
     _run([FF, "-hide_banner", "-loglevel", "error", "-y", "-i", video,
-          "-vf", f"fps=12/{seconds:.3f},scale=278:-1,tile=4x3", "-frames:v", "1", dest])
+          "-vf", f"fps={2 * n_scenes}/{seconds:.3f},scale={1112 // cols}:-1,tile={cols}x{rows}", "-frames:v", "1", dest])
 
 
 def share_copy(video: str) -> str:
@@ -371,7 +379,7 @@ def verify(episode_path: str, log=print) -> int:
     heard = transcribe(out, work)
     problems = final_problems(episode, heard, seconds, lufs, audience)
     sheet = os.path.join(work, "contact.jpg")
-    contact_sheet(out, sheet, seconds)
+    contact_sheet(out, sheet, seconds, len(episode["scenes"]))
     share = share_copy(out)
     report = {"episode": name, "file": out, "share": share, "seconds": round(seconds, 1), "lufs": lufs,
               "megabytes": round(os.path.getsize(share) / 1e6, 1), "contact_sheet": sheet,

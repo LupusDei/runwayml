@@ -191,6 +191,18 @@ class QcTest(unittest.TestCase):
         self.assertIn("wrong words", why)
 
 
+class ContactSheetTest(unittest.TestCase):
+    def test_should_show_two_frames_per_scene_so_a_long_episode_is_not_undersampled(self):
+        # 2026-09-26: a fixed 12-frame sheet showed only one frame per scene of a three-minute episode.
+        self.assertEqual(ex.sheet_grid(12), (6, 4))
+        self.assertEqual(ex.sheet_grid(6), (4, 3))
+
+    def test_should_fit_every_frame_in_the_grid(self):
+        for n in range(ex.MIN_SCENES, ex.MAX_SCENES + 1):
+            cols, rows = ex.sheet_grid(n)
+            self.assertGreaterEqual(cols * rows, 2 * n)
+
+
 class CostTest(unittest.TestCase):
     def test_should_price_an_episode_by_seconds_rendered_at_the_model_rate(self):
         self.assertEqual(ex.estimate_credits(GOOD, CHAR), 5 * 15 * 30)
